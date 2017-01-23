@@ -269,6 +269,7 @@ Object.assign( THREE, {
 	LuminanceAlphaFormat: 1023,
 	// THREE.RGBEFormat handled as THREE.RGBAFormat in shaders
 	RGBEFormat: THREE.RGBAFormat, //1024;
+	RFormat: 1025,
 	DepthFormat: 1026,
 
 	// DDS / ST3C Compressed texture formats
