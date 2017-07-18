@@ -2601,6 +2601,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 		var isPowerOfTwoImage = isPowerOfTwo( image ),
 		glFormat = paramThreeToGL( texture.format ),
 		glType = paramThreeToGL( texture.type );
+		var internalFormat = getTextureInternalFormat( texture.format, texture.type );
 
 		setTextureParameters( textureTarget, texture, isPowerOfTwoImage );
 
@@ -2637,7 +2638,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 				for ( var i = 0, il = mipmaps.length; i < il; i ++ ) {
 
 					mipmap = mipmaps[ i ];
-					state.texImage2D( _gl.TEXTURE_2D, i, glFormat, mipmap.width, mipmap.height, 0, glFormat, glType, mipmap.data );
+					state.texImage2D( _gl.TEXTURE_2D, i, internalFormat, mipmap.width, mipmap.height, 0, glFormat, glType, mipmap.data );
 
 				}
 
@@ -2645,7 +2646,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			} else {
 
-				state.texImage2D( _gl.TEXTURE_2D, 0, glFormat, image.width, image.height, 0, glFormat, glType, image.data );
+				state.texImage2D( _gl.TEXTURE_2D, 0, internalFormat, image.width, image.height, 0, glFormat, glType, image.data );
 
 			}
 
@@ -2659,7 +2660,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 					if ( state.getCompressedTextureFormats().indexOf( glFormat ) > - 1 ) {
 
-						state.compressedTexImage2D( _gl.TEXTURE_2D, i, glFormat, mipmap.width, mipmap.height, 0, mipmap.data );
+						state.compressedTexImage2D( _gl.TEXTURE_2D, i, internalFormat, mipmap.width, mipmap.height, 0, mipmap.data );
 
 					} else {
 
@@ -2669,12 +2670,12 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 				} else {
 
-					state.texImage2D( _gl.TEXTURE_2D, i, glFormat, mipmap.width, mipmap.height, 0, glFormat, glType, mipmap.data );
+					state.texImage2D( _gl.TEXTURE_2D, i, internalFormat, mipmap.width, mipmap.height, 0, glFormat, glType, mipmap.data );
 
 				}
 
 			}
-        } else if ( texture instanceof THREE.Texture3D ) {
+		} else if ( texture instanceof THREE.Texture3D ) {
 
 			// WebGL2 only cube texture
 			if (!_isWebGL2) {
@@ -2686,13 +2687,13 @@ THREE.WebGLRenderer = function ( parameters ) {
 				for ( var i = 0, il = mipmaps.length; i < il; i ++ ) {
 
 					mipmap = mipmaps[ i ];
-					state.texImage3D( _gl.TEXTURE_3D, i, glFormat, mipmap.width, mipmap.height, mipmap.depth, 0, glFormat, glType, mipmap.data );
+					state.texImage3D( _gl.TEXTURE_3D, i, internalFormat, mipmap.width, mipmap.height, mipmap.depth, 0, glFormat, glType, mipmap.data );
 
 				}
 
 				texture.generateMipmaps = false;
 
-		} else {
+			} else {
 
 				// Chrome fails if internal format is RGB or RGBA
 				var internalFormat = _gl.RGB32F;
@@ -2723,7 +2724,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 				for ( var i = 0, il = mipmaps.length; i < il; i ++ ) {
 
 					mipmap = mipmaps[ i ];
-					state.texImage2D( _gl.TEXTURE_2D, i, glFormat, glFormat, glType, mipmap );
+					state.texImage2D( _gl.TEXTURE_2D, i, internalFormat, glFormat, glType, mipmap );
 
 				}
 
@@ -2731,7 +2732,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 			} else {
 
-				state.texImage2D( _gl.TEXTURE_2D, 0, glFormat, glFormat, glType, image );
+				state.texImage2D( _gl.TEXTURE_2D, 0, internalFormat, glFormat, glType, image );
 
 			}
 
@@ -2886,6 +2887,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 				isPowerOfTwoImage = isPowerOfTwo( image ),
 				glFormat = paramThreeToGL( texture.format ),
 				glType = paramThreeToGL( texture.type );
+				var internalType = getTextureInternalFormat(texture.format, texture.type );
 
 				setTextureParameters( _gl.TEXTURE_CUBE_MAP, texture, isPowerOfTwoImage );
 
@@ -2895,11 +2897,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 						if ( isDataTexture ) {
 
-							state.texImage2D( _gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, cubeImage[ i ].width, cubeImage[ i ].height, 0, glFormat, glType, cubeImage[ i ].data );
+							state.texImage2D( _gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalType, cubeImage[ i ].width, cubeImage[ i ].height, 0, glFormat, glType, cubeImage[ i ].data );
 
 						} else {
 
-							state.texImage2D( _gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, glFormat, glFormat, glType, cubeImage[ i ] );
+							state.texImage2D( _gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, internalType, glFormat, glType, cubeImage[ i ] );
 
 						}
 
@@ -2925,7 +2927,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 							} else {
 
-								state.texImage2D( _gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, j, glFormat, mipmap.width, mipmap.height, 0, glFormat, glType, mipmap.data );
+								state.texImage2D( _gl.TEXTURE_CUBE_MAP_POSITIVE_X + i, j, internalType, mipmap.width, mipmap.height, 0, glFormat, glType, mipmap.data );
 
 							}
 
@@ -3060,11 +3062,11 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		var glFormat = paramThreeToGL( renderTarget.texture.format );
 		var glType = paramThreeToGL( renderTarget.texture.type );
-		state.texImage2D( textureTarget, 0, glFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null );
+		var internalFormat = getTextureInternalFormat( renderTarget.texture.format, renderTarget.texture.type );
+		state.texImage2D( textureTarget, 0, internalFormat, renderTarget.width, renderTarget.height, 0, glFormat, glType, null );
 		_gl.bindFramebuffer( _gl.FRAMEBUFFER, framebuffer );
 		_gl.framebufferTexture2D( _gl.FRAMEBUFFER, attachment, textureTarget, properties.get( renderTarget.texture ).__webglTexture, 0 );
 		_gl.bindFramebuffer( _gl.FRAMEBUFFER, null );
-
 	}
 
 	// Setup storage for internal depth/stencil buffers and bind to correct framebuffer
@@ -3507,6 +3509,15 @@ THREE.WebGLRenderer = function ( parameters ) {
 
 		return 0;
 
+	}
+
+	function getTextureInternalFormat( format, type ) {
+		// TODO: Make this robust
+		// See also Line 2699 for something equivalent for Texture3D?
+		if( format === THREE.RGBAFormat && type === THREE.FloatType)
+			return _gl.RGBA32F;
+
+		return paramThreeToGL(format);
 	}
 
 };
