@@ -245,6 +245,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 	extensions.get( 'OES_texture_half_float_linear' );
 	extensions.get( 'OES_standard_derivatives' );
 	extensions.get( 'ANGLE_instanced_arrays' );
+	extensions.get( 'EXT_color_buffer_float' );
 
 	if ( extensions.get( 'OES_element_index_uint' ) ) {
 
@@ -3343,6 +3344,7 @@ THREE.WebGLRenderer = function ( parameters ) {
 				if ( texture.type !== THREE.UnsignedByteType &&
 				     paramThreeToGL( texture.type ) !== _gl.getParameter( _gl.IMPLEMENTATION_COLOR_READ_TYPE ) &&
 				     ! ( texture.type === THREE.FloatType && extensions.get( 'WEBGL_color_buffer_float' ) ) &&
+				     ! ( texture.type === THREE.FloatType && extensions.get( 'EXT_color_buffer_float' ) ) &&
 				     ! ( texture.type === THREE.HalfFloatType && extensions.get( 'EXT_color_buffer_half_float' ) ) ) {
 
 					console.error( 'THREE.WebGLRenderer.readRenderTargetPixels: renderTarget is not in UnsignedByteType or implementation defined type.' );
